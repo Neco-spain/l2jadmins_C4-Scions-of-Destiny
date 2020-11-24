@@ -64,15 +64,24 @@ public class ItemExtractableItems implements IItemHandler
 			chanceFrom += chance;
 		}
 		
-		if (createItemID <= 0)
+		if (createItemID < 0)
 		{
-			activeChar.sendMessage("Nothing happened.");
+			LOG.warning("Extractable item: " + itemID + " has been destroy in char: " + activeChar.getName() + ". Try to create: " + createItemID + ". Error: it's not an item template!");
+			activeChar.getInventory().destroyItemByItemId("Extract", itemID, 1, activeChar, true);
+			activeChar.sendMessage("Extraction failed.");
+			return;
+		}
+		
+		if (createItemID == 0)
+		{
+			activeChar.getInventory().destroyItemByItemId("Extract", itemID, 1, activeChar, true);
+			activeChar.sendMessage("Extraction failed.");
 			return;
 		}
 		
 		if (ItemData.getInstance().createDummyItem(createItemID) == null)
 		{
-			LOG.warning("createItemID " + createItemID + " doesn't have template!");
+			LOG.warning("Could not extract the item: " + itemID + " Error: " + createItemID + ". item not found, reapir or change your item!");
 			activeChar.sendMessage("Nothing happened.");
 			return;
 		}
